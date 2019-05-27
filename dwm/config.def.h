@@ -2,17 +2,17 @@
 
 /* appearance */
 static const char *fonts[] = {
-	"monospace:size=10"
+	"UbuntuMono Nerd Font:size=12"
 };
-static const char dmenufont[]       = "monospace:size=10";
-static const char normbordercolor[] = "#444444";
-static const char normbgcolor[]     = "#222222";
-static const char normfgcolor[]     = "#bbbbbb";
-static const char selbordercolor[]  = "#005577";
-static const char selbgcolor[]      = "#005577";
-static const char selfgcolor[]      = "#eeeeee";
-static const unsigned int borderpx  = 1;        /* border pixel of windows */
-static const unsigned int gappx     = 1;        /* gap pixel between windows */
+static const char dmenufont[]       = "UbuntuMono Nerd Font:size=12";
+static const char normbordercolor[] = "#282828";
+static const char normbgcolor[]     = "#282828";
+static const char normfgcolor[]     = "#f9f5d7";
+static const char selbordercolor[]  = "#504945";
+static const char selbgcolor[]      = "#504945";
+static const char selfgcolor[]      = "#f9f5d7";
+static const unsigned int borderpx  = 3;        /* border pixel of windows */
+static const unsigned int gappx     = 2;        /* gap pixel between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
@@ -28,6 +28,8 @@ static const Rule rules[] = {
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
 	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+	{ "Chromium",  NULL,      NULL,       1 << 8,       0,           -1 },
+	{ "Thunderbird", NULL,    NULL,       1 << 7,       0,           -1 },
 };
 
 /* layout(s) */
@@ -57,6 +59,24 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", normbgcolor, "-nf", normfgcolor, "-sb", selbgcolor, "-sf", selfgcolor, NULL };
 static const char *termcmd[]  = { "st", NULL };
+
+/* volume control */
+static const char *upvol[] = { "amixer", "set", "Master", "3%+", NULL };
+static const char *downvol[] = { "amixer", "set", "Master", "3%-", NULL };
+static const char *mutevol[] = { "amixer", "set", "Master", "toggle", NULL };
+
+/* slock hotkey */
+static const char *slock[] = { "slock", NULL };
+
+/* xbacklight hotkeys for changing brightness */
+static const char *upbgh[] = { "xbacklight", "+7", NULL };
+static const char *downbgh[] = { "xbacklight", "-7", NULL };
+
+/* snaps */
+static const char *spotify[] = { "snap", "run", "spotify", NULL };
+
+/* ranger */
+static const char *ranger[] = { "st", "-e", "ranger", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -93,6 +113,14 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+	{ MODKEY,                       XK_F12,    spawn,          {.v = upvol   } },
+	{ MODKEY,                       XK_F11,    spawn,          {.v = downvol } },
+	{ MODKEY,                       XK_F10,    spawn,          {.v = mutevol } },
+	{ MODKEY,                       XK_F6,     spawn,          {.v = upbgh   } },
+	{ MODKEY,                       XK_F5,     spawn,          {.v = downbgh } },
+	{ MODKEY|ShiftMask,             XK_l,      spawn,          {.v = slock   } },
+	{ MODKEY,                       XK_s,      spawn,          {.v = spotify } },
+	{ MODKEY,                       XK_r,      spawn,          {.v = ranger  } },
 };
 
 /* button definitions */
