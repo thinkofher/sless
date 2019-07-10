@@ -1,4 +1,4 @@
-/* See LICENSE file for copyright and license details. */
+//* See LICENSE file for copyright and license details. */
 
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
@@ -62,22 +62,25 @@ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont,
 static const char *termcmd[]  = { "st", NULL };
 
 /* volume control */
-static const char *upvol[] = { "amixer", "set", "Master", "3%+", NULL };
-static const char *downvol[] = { "amixer", "set", "Master", "3%-", NULL };
-static const char *mutevol[] = { "amixer", "set", "Master", "toggle", NULL };
+static const char *upvol[] = { "volume_setter",   "up", NULL };
+static const char *downvol[] = { "volume_setter",   "down", NULL };
+static const char *mutevol[] = { "volume_setter",   "mute", NULL };
 
 /* slock hotkey */
 static const char *slock[] = { "slock", NULL };
 
 /* xbacklight hotkeys for changing brightness */
-static const char *upbgh[] = { "xbacklight", "+7", NULL };
-static const char *downbgh[] = { "xbacklight", "-7", NULL };
+static const char *upbgh[] = { "brightness_setter", "up", NULL };
+static const char *downbgh[] = { "brightness_setter", "down", NULL };
 
 /* snaps */
 static const char *spotify[] = { "snap", "run", "spotify", NULL };
 
 /* ranger */
 static const char *ranger[] = { "st", "-e", "ranger", NULL };
+
+/* nvim */
+static const char *nvim[] = {"st", "-e", "nvim", NULL};
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -114,14 +117,15 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
-	{ MODKEY,                       XK_F12,    spawn,          {.v = upvol   } },
-	{ MODKEY,                       XK_F11,    spawn,          {.v = downvol } },
-	{ MODKEY,                       XK_F10,    spawn,          {.v = mutevol } },
+	{ MODKEY,                       XK_F4,    spawn,          {.v = upvol   } },
+	{ MODKEY,                       XK_F3,    spawn,          {.v = downvol } },
+	{ MODKEY,                       XK_F2,    spawn,          {.v = mutevol } },
 	{ MODKEY,                       XK_F6,     spawn,          {.v = upbgh   } },
 	{ MODKEY,                       XK_F5,     spawn,          {.v = downbgh } },
 	{ MODKEY|ShiftMask,             XK_l,      spawn,          {.v = slock   } },
 	{ MODKEY,                       XK_s,      spawn,          {.v = spotify } },
 	{ MODKEY,                       XK_r,      spawn,          {.v = ranger  } },
+	{ MODKEY,                       XK_n,      spawn,          {.v = nvim    } },
 };
 
 /* button definitions */
