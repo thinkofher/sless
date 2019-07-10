@@ -1,0 +1,39 @@
+#!/bin/bash
+
+TMPFILE=/tmp/volumenotifications
+
+function get_volume {
+	amixer -c 1 get Master | grep '%' | head -n 1 | cut -d '[' -f 2 | cut -d '%' -f 1
+}
+
+function is_mute {
+	amixer -c 1 get Master | grep '%' | grep -oE '[^ ]+$' | grep off > /dev/null
+}
+
+function send_notification {
+	notify-alt -u low -t 800 --replace-file=$TMPFILE "Volume" "$(get_volume)%"
+}
+
+case $1 in
+	get)
+		echo $(get_volume)
+		;;
+	up)
+		amixer -c 1 set Master on > /dev/null
+		amixer -c 1 set Master "3%+" > /dev/null
+		send_notification
+		;;
+	down)
+		amixer -c 1 set Master on > /dev/null
+		amixer -c 1 set Master "3%-" > /dev/null
+		send_notification
+		;;
+	mute)
+		amixer -c 1 set Master toggle > /dev/null
+		if is_mute ; then
+			notify-alt -u low --replace-file=$TMPFILE "Volume" "Mute"
+		else
+			send_notification
+		fi
+		;;
+esac

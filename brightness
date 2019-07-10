@@ -1,0 +1,25 @@
+#!/bin/bash
+
+TMPFILE=/tmp/brightnessnotifications
+
+function get_brightness {
+	xbacklight | awk '{ print int($1) }'
+}
+
+function send_notification {
+	notify-alt -u low -t 800 --replace-file=$TMPFILE "Brightness" "$(get_brightness)%"
+}
+
+case $1 in
+	get)
+		echo $(get_brightness)
+		;;
+	up)
+		xbacklight +5
+		send_notification
+		;;
+	down)
+		xbacklight -5
+		send_notification
+		;;
+esac
