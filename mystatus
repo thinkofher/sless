@@ -1,48 +1,7 @@
 #!/bin/bash
 
-# checks if spotify is current playing
-# and returns the name of artist and
-# current playing song
-
-songs () {
-    func_result=$( spotify-now -e "closed" -p "paused" -i "\uf9c6 %artist - %title" )
-
-    if [[ $func_result == "paused" ]]; then
-        ans=$( spotify-now -i "%artist - %title" )
-        if [[ ${#ans} -gt 44 ]]; then
-            echo -e "\uf8e4  "${ans:0:44}"..."
-        else
-            echo -e "\uf8e4  "$ans
-        fi
-    elif [[ $func_result == "closed" ]]; then
-        echo -e "\uf9c6 Not Playing"
-    else
-        if [[ ${#func_result} -gt 50 ]]; then
-            echo -e ${func_result:0:50}"..."
-        else
-            echo -e $func_result
-        fi
-    fi
-}
-
-
-# checks for remaining space in /home directory
-home_space () {
-    echo $(echo -e "\uf7c9" && df -h | grep /home | awk '{ print $6 " " $4 }')
-}
-
-# checks how many packages to update
-check_updates_apt () {
-    echo $(echo -e "\uf8d3 " && aptitude search '~U' | wc -l)
-}
-
-# checks for current ip
-check_ip () {
-    echo $(echo -e "\uf1eb " && /sbin/ifconfig wlp3s0 | grep -m 1 inet | awk '{ print $2 }')
-}
-
 # Statusbar loop
 while true; do
-   xsetroot -name "`check_updates_apt` | `check_ip` | `home_space` | `echo -e "\uf455"` `date +"%a, %d %B %Y, %H:%M"` | `echo -e "\uf306"` `whoami`@`hostname` "
-   sleep 30s    # Update time every minute
+   /home/beniamin/.scripts/mysetroot
+   sleep 1m    # Update time every minute
 done
