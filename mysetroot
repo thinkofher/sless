@@ -26,8 +26,18 @@ songs () {
 }
 
 # checks for current ip
-check_ip () {
-    echo $(echo -e "\uf1eb " && /sbin/ifconfig wlp3s0 | grep -m 1 inet | awk '{ print $2 }')
+hostnameip_check () {
+    if [ -z $(hostname -I) ]
+    then
+        echo -e "\ufaa9 disconected"
+    else
+        echo -e "\ufaa8 $(hostname -I)"
+    fi
+}
+
+# checks load average
+load_average () {
+    echo -e "\uf85a $(cat /proc/loadavg | awk '{ print $1 " " $2 " " $3}')"
 }
 
 # check the number of deb packages installed
