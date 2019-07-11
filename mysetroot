@@ -30,6 +30,11 @@ check_ip () {
     echo $(echo -e "\uf1eb " && /sbin/ifconfig wlp3s0 | grep -m 1 inet | awk '{ print $2 }')
 }
 
+# check the number of deb packages installed
+deb_pacakges () {
+    echo -e "\uf8d3 $(dpkg -l | awk '{ print $2 }' | sed 1,6d | wc -l)"
+}
+
 # checks for remaining space in /home directory
 home_space () {
     echo $(echo -e "\uf7c9" && df -h | grep /dev/sda1 | awk '{ print $1 " " $4 }')
