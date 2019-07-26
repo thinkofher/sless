@@ -5,7 +5,7 @@ static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "UbuntuMono Nerd Font:size=12" };
+static const char *fonts[]          = { "UbuntuMono Nerd Font:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
@@ -82,6 +82,9 @@ static const char *ranger[] = { "st", "-e", "ranger", NULL };
 /* nvim */
 static const char *nvim[] = {"st", "-e", "nvim", NULL};
 
+/* suspend */
+static const char *suspend[] = {"systemctl", "suspend", NULL};
+
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
@@ -126,6 +129,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_s,      spawn,          {.v = spotify } },
 	{ MODKEY,                       XK_r,      spawn,          {.v = ranger  } },
 	{ MODKEY,                       XK_n,      spawn,          {.v = nvim    } },
+	{ MODKEY|ShiftMask,             XK_s,      spawn,          {.v = suspend } },
 };
 
 /* button definitions */
