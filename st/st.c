@@ -42,11 +42,10 @@
 #define ISCONTROLC0(c)		(BETWEEN(c, 0, 0x1f) || (c) == '\177')
 #define ISCONTROLC1(c)		(BETWEEN(c, 0x80, 0x9f))
 #define ISCONTROL(c)		(ISCONTROLC0(c) || ISCONTROLC1(c))
-#define ISDELIM(u)			(u && wcschr(worddelimiters, u))
-#define TLINE(y)			((y) < term.scr ? term.hist[((y) + term.histi - \
-							term.scr + HISTSIZE + 1) % HISTSIZE] : \
-							term.line[(y) - term.scr])
-
+#define ISDELIM(u)		(u && wcschr(worddelimiters, u))
+#define TLINE(y)		((y) < term.scr ? term.hist[((y) + term.histi - \
+				term.scr + HISTSIZE + 1) % HISTSIZE] : \
+				term.line[(y) - term.scr])
 
 enum term_mode {
 	MODE_WRAP        = 1 << 0,
@@ -122,10 +121,10 @@ typedef struct {
 	int col;      /* nb col */
 	Line *line;   /* screen */
 	Line *alt;    /* alternate screen */
-	int *dirty;   /* dirtyness of lines */
 	Line hist[HISTSIZE]; /* history buffer */
 	int histi;    /* history index */
 	int scr;      /* scroll back */
+	int *dirty;   /* dirtyness of lines */
 	TCursor c;    /* cursor */
 	int ocx;      /* old cursor col */
 	int ocy;      /* old cursor row */
@@ -529,7 +528,7 @@ selsnap(int *x, int *y, int direction)
 		 * Snap around if the word wraps around at the end or
 		 * beginning of a line.
 		 */
-		prevgp = &term.line[*y][*x];
+		prevgp = &TLINE(*y)[*x];
 		prevdelim = ISDELIM(prevgp->u);
 		for (;;) {
 			newx = *x + direction;
@@ -1074,6 +1073,7 @@ void
 kscrollup(const Arg* a)
 {
 	int n = a->i;
+
 	if (n < 0)
 		n = term.row + n;
 
@@ -1093,10 +1093,10 @@ tscrolldown(int orig, int n, int copyhist)
 	LIMIT(n, 0, term.bot-orig+1);
 
 	if (copyhist) {
-			term.histi = (term.histi - 1 + HISTSIZE) % HISTSIZE;
-			temp = term.hist[term.histi];
-			term.hist[term.histi] = term.line[term.bot];
-			term.line[term.bot] = temp;
+		term.histi = (term.histi - 1 + HISTSIZE) % HISTSIZE;
+		temp = term.hist[term.histi];
+		term.hist[term.histi] = term.line[term.bot];
+		term.line[term.bot] = temp;
 	}
 
 	tsetdirt(orig, term.bot-n);
@@ -1120,14 +1120,14 @@ tscrollup(int orig, int n, int copyhist)
 	LIMIT(n, 0, term.bot-orig+1);
 
 	if (copyhist) {
-			term.histi = (term.histi + 1) % HISTSIZE;
-			temp = term.hist[term.histi];
-			term.hist[term.histi] = term.line[orig];
-			term.line[orig] = temp;
+		term.histi = (term.histi + 1) % HISTSIZE;
+		temp = term.hist[term.histi];
+		term.hist[term.histi] = term.line[orig];
+		term.line[orig] = temp;
 	}
 
 	if (term.scr > 0 && term.scr < HISTSIZE)
-			term.scr = MIN(term.scr + n, HISTSIZE-1);
+		term.scr = MIN(term.scr + n, HISTSIZE-1);
 
 	tclearregion(0, orig, term.col-1, orig+n-1);
 	tsetdirt(orig+n, term.bot);
@@ -2643,7 +2643,7 @@ draw(void)
 	drawregion(0, 0, term.col, term.row);
 	if (term.scr == 0)
 		xdrawcursor(cx, term.c.y, term.line[term.c.y][cx],
-			term.ocx, term.ocy, term.line[term.ocy][term.ocx]);
+				term.ocx, term.ocy, term.line[term.ocy][term.ocx]);
 	term.ocx = cx, term.ocy = term.c.y;
 	xfinishdraw();
 	xximspot(term.ocx, term.ocy);
