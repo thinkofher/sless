@@ -21,6 +21,6 @@ synclient TapButton3=2
 synclient TapButton2=3
 
 # setting up wallpaper
-feh --bg-fill /home/beniamin/Obrazy/Wallpapers/dog.jpg
+feh --bg-center $HOME/.wall.jpg
 
 exec dwm
