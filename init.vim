@@ -12,6 +12,9 @@ call plug#begin('~/.local/share/nvim/plugged')
 
 " Make sure you use single quotes
 
+" Fancy start screen for vim
+Plug 'mhinz/vim-startify'
+
 " Language Server Protocol (LSP) support for vim and neovim
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
@@ -74,7 +77,6 @@ Plug 'rust-lang/rust.vim'
 
 " go lang plugins
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-Plug 'zchee/deoplete-go', { 'do': 'make'}
 
 " Emmet plugin
 Plug 'mattn/emmet-vim'
@@ -91,14 +93,11 @@ Plug 'ryanoasis/vim-devicons'
 " deoplete.nvim source for Python
 Plug 'deoplete-plugins/deoplete-jedi'
 
-" Clojure async clj autocompletion and other plugins
-" Plug 'clojure-vim/async-clj-omni'
-" Plug 'tpope/vim-fireplace'
-" Plug 'junegunn/rainbow_parentheses.vim'
-" Plug 'SevereOverfl0w/clojure-check', {'do': './install'}
+" Clojure plugins
+Plug 'junegunn/rainbow_parentheses.vim'
 
 " Julia support
-" Plug 'JuliaEditorSupport/julia-vim'
+Plug 'JuliaEditorSupport/julia-vim'
 
 " Initialize plugin system
 call plug#end()
@@ -145,7 +144,7 @@ augroup END
 au TermOpen * setlocal nonumber norelativenumber
 
 " colors
-set t_Co=256
+" set t_Co=256
 if (has("termguicolors"))
     set termguicolors
 endif
@@ -174,6 +173,10 @@ filetype plugin on
 set omnifunc=syntaxcomplete#Complete
 filetype plugin indent on
 autocmd BufNewFile,BufRead *.go set list listchars=eol:¬,tab:\|\ 
+autocmd FileType go set noexpandtab
+autocmd FileType go set tabstop=2
+autocmd FileType go set softtabstop=2
+autocmd FileType go set shiftwidth=2
 
 " change directory to the current file automatically
 autocmd BufEnter * silent! lcd %:p:h
@@ -223,10 +226,11 @@ call neomake#configure#automake('rw', 1000)
 " normal mode (after 1s; no delay when writing).
 call neomake#configure#automake('nrwi', 500)
 
+" neomake flake8 for python
 let g:neomake_python_enable_makers = ['flake8']
 let g:neomake_python_python_exe = 'flake8'
-let g:neomake_clojure_enabled_makers = ['check']
 
+" neomake sbt
 let g:neomake_sbt_maker = {
       \ 'exe': 'sbt',
       \ 'args': ['-Dsbt.log.noformat=true', 'compile'],
@@ -245,10 +249,9 @@ let g:neomake_enabled_makers = ['sbt']
 " \ 'python': ['~/.local/bin/pyls',],
 let g:LanguageClient_serverCommands = {
     \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
-    \ 'clojure': ['/usr/local/bin/clojure-lsp'],
     \ 'cpp': ['clangd-6.0'],
     \ 'c': ['clangd-6.0'],
-    \ 'clj': ['/usr/local/bin/clojure-lsp'],
+    \ 'go': ['gopls'],
     \ }
 nnoremap <F5> :call LanguageClient_contextMenu()<CR>
 let g:LanguageClient_settingsPath='~/.lsp/settings.json'
@@ -271,6 +274,7 @@ command! -bang -nargs=* Ag
 map ; :Files<CR>
 
 " FZF
+let $FZF_DEFAULT_COMMAND = 'ag --hidden -l -g ""'
 function! s:buflist()
   redir => ls
   silent ls
@@ -282,6 +286,7 @@ function! s:bufopen(e)
   execute 'buffer' matchstr(a:e, '^[ 0-9]*')
 endfunction
 
+" Selecting buffers with fzf
 nnoremap <silent> <Leader><Enter> :call fzf#run({
 \   'source':  reverse(<sid>buflist()),
 \   'sink':    function('<sid>bufopen'),
@@ -317,17 +322,15 @@ let g:go_asmfmt_autosave=1
 " Deoplete
 let g:deoplete#enable_at_startup = 1
 
-" Deoplete go
-let g:deoplete#sources#go#gocode_binary = '$GOPATH/bin/gocode'
+" let g:deoplete#sources#go#gocode_binary = '$GOPATH/bin/gocode'
 let g:deoplete#sources#go#unimported_packages = 1
 let g:deoplete#sources#go#builtin_objects = 1
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 let g:deoplete#sources#go#pointer = 1
 " let g:deoplete#sources#go#source_importer = 1
 
-" Deoplete Clojure
-let g:deoplete#keyword_patterns = {}
-let g:deoplete#keyword_patterns.clojure = '[\w!$%&*+/:<=>?@\^_~\-\.#]*'
+" Deoplete-jedi
+" let g:deoplete#sources#jedi#python_path = '$VIRTUAL_ENV/python'
 
 " Rainbow Parentheses
 " Activation based on file type
@@ -338,17 +341,17 @@ augroup END
 
 " Lightline
 let g:lightline = {
-      \ 'colorscheme': 'gruvbox',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'gitbranch': 'gitbranch#name',
-      \   'filetype': 'MyFiletype',
-      \   'fileformat': 'MyFileformat',
-      \ },
-      \ }
+     \ 'colorscheme': 'gruvbox',
+     \ 'active': {
+     \   'left': [ [ 'mode', 'paste' ],
+     \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+     \ },
+     \ 'component_function': {
+     \   'gitbranch': 'gitbranch#name',
+     \   'filetype': 'MyFiletype',
+     \   'fileformat': 'MyFileformat',
+     \ },
+     \ }
 
 function! MyFiletype()
   return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
