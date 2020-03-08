@@ -1,22 +1,30 @@
 call plug#begin('~/.local/share/nvim/plugged')
 " go lang plugins
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-" Vim syntax file for the HLA programming language
-Plug 'jmahler/hla.vim'
+
 " colorschemes
-Plug 'morhetz/gruvbox'
+Plug 'nanotech/jellybeans.vim'
+
 " plugin that provides Rust file detection, syntax highlighting, formatting
 " etc..
 Plug 'rust-lang/rust.vim'
+
 " fzf stands for “fuzzy finder” and works similarly to the Goto
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+
+" Plugin for haskell syntax
+Plug 'neovimhaskell/haskell-vim'
+
+" Plugin for elm syntax
+Plug 'ElmCast/elm-vim'
 call plug#end()
+
 
 " THEMES
 " ------
 syntax enable
-colorscheme gruvbox
+colorscheme jellybeans
 
 " SETTINGS
 " --------
@@ -42,27 +50,9 @@ set nohlsearch
 " always show statusline
 set laststatus=2
 
-" setting numbers
-set nu
-set number relativenumber
-augroup numbertoggle
-    autocmd!
-    autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-    autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
-augroup END
-au TermOpen * setlocal nonumber norelativenumber
-
-" colors
-" set t_Co=256
-" if (has("termguicolors"))
-"     set termguicolors
-" endif
-
-" autocompletion information
-set completeopt-=preview
-
-" change directory to the current file automatically
-autocmd BufEnter * silent! lcd %:p:h
+" buffers
+nmap <C-P> :bp<CR>
+nmap <C-N> :bn<CR>
 
 " removes trailing spaces
 function TrimWhiteSpace()
@@ -71,25 +61,33 @@ function TrimWhiteSpace()
 endfunction
 
 set list listchars=trail:.,extends:>
-autocmd FileType rust,c,cpp,go,java,python,html,css autocmd FileWritePre * call TrimWhiteSpace()
-autocmd FileType rust,c,cpp,go,java,python,html,css autocmd FileAppendPre * call TrimWhiteSpace()
-autocmd FileType rust,c,cpp,go,java,python,html,css autocmd FilterWritePre * call TrimWhiteSpace()
-autocmd FileType rust,c,cpp,go,java,python,html,css autocmd BufWritePre * call TrimWhiteSpace()
+autocmd FileType haskell,rust,c,cpp,go,java,python,html,css autocmd FileWritePre * call TrimWhiteSpace()
+autocmd FileType haskell,rust,c,cpp,go,java,python,html,css autocmd FileAppendPre * call TrimWhiteSpace()
+autocmd FileType haskell,rust,c,cpp,go,java,python,html,css autocmd FilterWritePre * call TrimWhiteSpace()
+autocmd FileType haskell,rust,c,cpp,go,java,python,html,css autocmd BufWritePre * call TrimWhiteSpace()
+
+" haskell setup -> requirement: hasktags
+autocmd FileType haskell set list listchars=eol:¬
+autocmd FileType haskell autocmd BufWritePost * silent !hasktags --ctags .
 
 " clang setup
-autocmd FileType c,cpp set list listchars=eol:¬,tab:\|\ 
-autocmd FileType c,cpp set noexpandtab
+autocmd FileType make,c,cpp set list listchars=eol:¬,tab:\|\ 
+autocmd FileType make,c,cpp set noexpandtab
+
+" rust seutp
+autocmd FileType rust set list listchars=eol:¬
 
 " go lang setup
 filetype plugin on
 set omnifunc=syntaxcomplete#Complete
+set completeopt-=preview
 filetype plugin indent on
 autocmd FileType go set noexpandtab
 autocmd BufNewFile,BufRead *.go set list listchars=eol:¬,tab:\|\ 
 
-" python envs
-let g:python3_host_prog = '/home/beniamin/.pyenv/versions/neovim3/bin/python'
-let g:python_host_prog = '/home/beniamin/.pyenv/versions/neovim2/bin/python'
+" python envs -> requirement: pyenv
+let g:python3_host_prog = '$HOME/.pyenv/versions/neovim/bin/python'
+" let g:python_host_prog = $HOME/.pyenv/versions/neovim2/bin/python'
 
 " MAPPINGS
 " --------
@@ -118,11 +116,6 @@ let g:go_highlight_function_calls = 1
 let g:go_highlight_extra_types = 1
 let g:go_highlight_generate_tags = 1
 let g:go_highlight_operators = 1
-let g:go_fmt_autosave=1
-let g:go_asmfmt_autosave=1
-
-" HLA
-au BufRead,BufNewFile *.hla set syntax=hla
-
-" Rust
-autocmd FileType rust set list listchars=eol:¬
+let g:go_fmt_autosave = 1
+let g:go_asmfmt_autosave = 1
+let g:go_echo_go_info = 0

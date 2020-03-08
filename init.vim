@@ -1,9 +1,10 @@
 " Requirements:
 " - go, $GOPATH
-" - xclip
 " - pythoh modules: pynvim, python language server, jedi
 " - clang, clang-tools
 " - rust, rls
+" - ag-silver-searcher
+" - fzf
 
 " Specify a directory for plugins
 " - For Neovim: ~/.local/share/nvim/plugged
@@ -11,9 +12,6 @@
 call plug#begin('~/.local/share/nvim/plugged')
 
 " Make sure you use single quotes
-
-" Fancy start screen for vim
-Plug 'mhinz/vim-startify'
 
 " Language Server Protocol (LSP) support for vim and neovim
 Plug 'autozimu/LanguageClient-neovim', {
@@ -44,9 +42,7 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-fugitive'
 
 " colorschemes
-Plug 'morhetz/gruvbox'
-Plug 'joshdick/onedark.vim'
-Plug 'yous/vim-open-color'
+Plug 'nanotech/jellybeans.vim'
 
 " lightline
 Plug 'itchyny/lightline.vim'
@@ -81,9 +77,6 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 " Emmet plugin
 Plug 'mattn/emmet-vim'
 
-" Better syntax highlighting
-Plug 'sheerun/vim-polyglot'
-
 " Vim comments plugin
 Plug 'tpope/vim-commentary'
 
@@ -93,11 +86,12 @@ Plug 'ryanoasis/vim-devicons'
 " deoplete.nvim source for Python
 Plug 'deoplete-plugins/deoplete-jedi'
 
-" Clojure plugins
+" clojure plugins
+Plug 'Olical/conjure', { 'tag': 'v2.1.2', 'do': 'bin/compile' }
 Plug 'junegunn/rainbow_parentheses.vim'
 
-" Julia support
-Plug 'JuliaEditorSupport/julia-vim'
+" haskell plugins
+" Plug 'neovimhaskell/haskell-vim'
 
 " Initialize plugin system
 call plug#end()
@@ -107,7 +101,7 @@ call plug#end()
 " ------
 syntax enable
 set background=dark
-colorscheme gruvbox
+colorscheme jellybeans
 
 " SETTINGS
 " --------
@@ -134,20 +128,20 @@ set nohlsearch
 set laststatus=2
 
 " setting numbers
-set nu
-set number relativenumber
-augroup numbertoggle
-    autocmd!
-    autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-    autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
-augroup END
-au TermOpen * setlocal nonumber norelativenumber
+" set nu
+" set number relativenumber
+" augroup numbertoggle
+"     autocmd!
+"     autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+"     autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+" augroup END
+" au TermOpen * setlocal nonumber norelativenumber
 
 " colors
 " set t_Co=256
-if (has("termguicolors"))
-    set termguicolors
-endif
+" if (has("termguicolors"))
+"     set termguicolors
+" endif
 
 " autocompletion information
 set completeopt-=preview
@@ -159,31 +153,52 @@ function TrimWhiteSpace()
 endfunction
 
 set list listchars=trail:.,extends:>
-autocmd FileType c,cpp,go,java,python,html,css autocmd FileWritePre * call TrimWhiteSpace()
-autocmd FileType c,cpp,go,java,python,html,css autocmd FileAppendPre * call TrimWhiteSpace()
-autocmd FileType c,cpp,go,java,python,html,css autocmd FilterWritePre * call TrimWhiteSpace()
-autocmd FileType c,cpp,go,java,python,html,css autocmd BufWritePre * call TrimWhiteSpace()
+autocmd FileType c,cpp,rust,go,java,python,html,css autocmd FileWritePre * call TrimWhiteSpace()
+autocmd FileType c,cpp,rust,go,java,python,html,css autocmd FileAppendPre * call TrimWhiteSpace()
+autocmd FileType c,cpp,rust,go,java,python,html,css autocmd FilterWritePre * call TrimWhiteSpace()
+autocmd FileType c,cpp,rust,go,java,python,html,css autocmd BufWritePre * call TrimWhiteSpace()
+
+" haskell setup
+" autocmd FileType haskell set list listchars=eol:¬
 
 " clang setup
-autocmd FileType c,cpp set list listchars=eol:¬,tab:\|\ 
-autocmd FileType c,cpp set noexpandtab
+autocmd FileType c,cpp,make set list listchars=eol:¬,tab:\|\ 
+autocmd FileType c,cpp,make set noexpandtab
+
+" rust setup
+autocmd FileType rust set list listchars=eol:¬
+
+" web setup
+autocmd FileType html,css set tabstop=2
+autocmd FileType html,css set softtabstop=2
+autocmd FileType html,css set shiftwidth=2
 
 " go lang setup
 filetype plugin on
 set omnifunc=syntaxcomplete#Complete
 filetype plugin indent on
-autocmd BufNewFile,BufRead *.go set list listchars=eol:¬,tab:\|\ 
+autocmd BufNewFile,BufRead *.mod set list listchars=eol:¬,tab:\|\ 
+autocmd BufNewFile,BufRead *.mod set noexpandtab
+autocmd BufNewFile,BufRead *.mod set tabstop=3
+autocmd BufNewFile,BufRead *.mod set softtabstop=3
+autocmd BufNewFile,BufRead *.mod set shiftwidth=3
+autocmd FileType go set list listchars=eol:¬,tab:\|\ 
 autocmd FileType go set noexpandtab
+autocmd FileType go set tabstop=3
+autocmd FileType go set softtabstop=3
+autocmd FileType go set shiftwidth=3
+
+" go lang setup
 autocmd FileType go set tabstop=2
 autocmd FileType go set softtabstop=2
 autocmd FileType go set shiftwidth=2
 
-" change directory to the current file automatically
-autocmd BufEnter * silent! lcd %:p:h
+
+" optional: change directory to the current file automatically
+" autocmd BufEnter * silent! lcd %:p:h
 
 " python envs
-let g:python3_host_prog = '/home/beniamin/.pyenv/versions/neovim3/bin/python'
-let g:python_host_prog = '/home/beniamin/.pyenv/versions/neovim2/bin/python'
+let g:python3_host_prog = '$HOME/.pyenv/versions/neovim/bin/python'
 
 " MAPPINGS
 " --------
@@ -198,9 +213,6 @@ vnoremap <A-k> :m '<-2<CR>gv=gv
 
 " silently saving file
 nnoremap <silent><leader>w :silent w<CR>
-
-" xclip configuartion
-vmap <F7> y:call system("xclip -i -selection clipboard", getreg("\""))<cr>:call system("xclip -i", getreg("\""))<cr>
 
 " fast go run running scripts
 nnoremap <leader>gg :only<CR>:silent w<CR>:GoRun<CR>
@@ -230,32 +242,23 @@ call neomake#configure#automake('nrwi', 500)
 let g:neomake_python_enable_makers = ['flake8']
 let g:neomake_python_python_exe = 'flake8'
 
-" neomake sbt
-let g:neomake_sbt_maker = {
-      \ 'exe': 'sbt',
-      \ 'args': ['-Dsbt.log.noformat=true', 'compile'],
-      \ 'append_file': 0,
-      \ 'auto_enabled': 1,
-      \ 'output_stream': 'stdout',
-      \ 'errorformat':
-          \ '%E[%trror]\ %f:%l:\ %m,' .
-            \ '%-Z[error]\ %p^,' .
-            \ '%-C%.%#,' .
-            \ '%-G%.%#'
-     \ }
-let g:neomake_enabled_makers = ['sbt']
-
 " LanguageClient
 " \ 'python': ['~/.local/bin/pyls',],
 let g:LanguageClient_serverCommands = {
     \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
-    \ 'cpp': ['clangd-6.0'],
-    \ 'c': ['clangd-6.0'],
+    \ 'cpp': ['clangd'],
+    \ 'c': ['clangd'],
     \ 'go': ['gopls'],
+    \ 'javascript': ['javascript-typescript-stdio'],
     \ }
 nnoremap <F5> :call LanguageClient_contextMenu()<CR>
 let g:LanguageClient_settingsPath='~/.lsp/settings.json'
 let g:LanguageClient_diagnosticsEnable = 0
+let g:LanguageClient_rootMarkers = {
+    \ 'go': ['go.mod'],
+    \ 'javascript': ['project.json'],
+    \ 'rust': ['Cargo.toml'],
+    \ }
 
 " Rust config
 let g:neomake_rust_cargo_command = ['test', '--no-run']
@@ -271,7 +274,8 @@ command! -bang -nargs=* Ag
   \                 <bang>0 ? fzf#vim#with_preview('up:60%')
   \                         : fzf#vim#with_preview('right:50%:hidden', '?'),
   \                 <bang>0)
-map ; :Files<CR>
+map <Leader>; :Files<CR>
+map <Leader>' :Ag<CR>
 
 " FZF
 let $FZF_DEFAULT_COMMAND = 'ag --hidden -l -g ""'
@@ -306,6 +310,9 @@ nmap <F8> :TagbarToggle<CR>
 
 " Vim-go
 let g:go_fmt_command = "goimports"
+let g:go_fmt_autosave = 1
+let g:go_fmt_fail_silently = 1
+let g:go_asmfmt_autosave = 1
 let g:go_autodetect_gopath = 1
 let g:go_list_type = "quickfix"
 
@@ -316,8 +323,7 @@ let g:go_highlight_function_calls = 1
 let g:go_highlight_extra_types = 1
 let g:go_highlight_generate_tags = 1
 let g:go_highlight_operators = 1
-let g:go_fmt_autosave=1
-let g:go_asmfmt_autosave=1
+let g:go_echo_go_info = 0
 
 " Deoplete
 let g:deoplete#enable_at_startup = 1
@@ -329,11 +335,11 @@ let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const
 let g:deoplete#sources#go#pointer = 1
 " let g:deoplete#sources#go#source_importer = 1
 
-" Deoplete-jedi
-" let g:deoplete#sources#jedi#python_path = '$VIRTUAL_ENV/python'
+call deoplete#custom#option('keyword_patterns', {'clojure': '[\w!$%&*+/:<=>?@\^_~\-\.#]*'})
 
-" Rainbow Parentheses
-" Activation based on file type
+" Clojure
+let g:conjure_log_direction = "horizontal"
+let g:conjure_log_blacklist = ["up", "ret", "ret-multiline", "load-file", "eval"]
 augroup rainbow_lisp
   autocmd!
   autocmd FileType lisp,clojure,scheme RainbowParentheses
@@ -341,7 +347,7 @@ augroup END
 
 " Lightline
 let g:lightline = {
-     \ 'colorscheme': 'gruvbox',
+     \ 'colorscheme': 'jellybeans',
      \ 'active': {
      \   'left': [ [ 'mode', 'paste' ],
      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
